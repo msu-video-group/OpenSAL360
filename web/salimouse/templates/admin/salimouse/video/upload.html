@@ -1,0 +1,362 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .video-upload-page {
+        max-width: 880px;
+    }
+
+    .video-upload-card {
+        background: #fff;
+        border: 1px solid #d9d9d9;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    .video-upload-card h2 {
+        margin: 0;
+        padding: 14px 18px;
+        background: #f8f8f8;
+        border-bottom: 1px solid #e3e3e3;
+        font-size: 16px;
+    }
+
+    .video-upload-body {
+        padding: 18px;
+    }
+
+    .video-upload-field + .video-upload-field {
+        margin-top: 18px;
+    }
+
+    .video-upload-field label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+    }
+
+    .video-upload-field .checkbox-row label {
+        display: inline;
+        margin: 0 0 0 6px;
+        font-weight: 400;
+    }
+
+    .video-upload-field input[type="file"] {
+        display: block;
+        max-width: 100%;
+    }
+
+    .video-upload-help {
+        margin: 8px 0 0;
+        color: #666;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .video-upload-inline-error {
+        margin: 10px 0 0;
+        color: #ba2121;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .video-upload-selection {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #ececec;
+    }
+
+    .video-upload-selection[hidden] {
+        display: none;
+    }
+
+    .video-upload-selection h3 {
+        margin: 0 0 10px;
+        font-size: 15px;
+    }
+
+    .video-upload-picker-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .video-upload-picker-note {
+        color: #666;
+        font-size: 13px;
+    }
+
+    .video-upload-selection-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .video-upload-selection-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 12px;
+        background: #fafafa;
+        border: 1px solid #ececec;
+        border-radius: 6px;
+    }
+
+    .video-upload-selection-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .video-upload-selection-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .video-upload-selection-name {
+        overflow-wrap: anywhere;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .video-upload-selection-item label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        font-weight: 400;
+        white-space: nowrap;
+    }
+
+    .video-upload-page .submit-row {
+        margin-top: 20px;
+    }
+
+    .video-upload-page .submit-row .button {
+        box-sizing: border-box;
+        display: inline-block;
+        min-width: 110px;
+        margin: 0 0 0 8px;
+        padding: 10px 15px;
+        border-radius: 4px;
+        background: #79aec8;
+        color: #fff;
+        text-align: center;
+    }
+
+    .video-upload-page .submit-row .button:hover,
+    .video-upload-page .submit-row .button:focus {
+        background: #609ab6;
+    }
+
+    .video-upload-page .submit-row input.default {
+        min-width: 110px;
+        border-radius: 4px;
+    }
+
+    .video-upload-remove {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: #8a8a8a;
+        cursor: pointer;
+        font-size: 24px;
+        line-height: 1;
+        padding: 0 2px;
+    }
+
+    .video-upload-remove:hover {
+        color: #333;
+    }
+
+    .video-upload-errors {
+        margin-bottom: 18px;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">Home</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label='salimouse' %}">Salimouse</a>
+&rsaquo; <a href="{% url 'admin:salimouse_video_changelist' %}">Videos</a>
+&rsaquo; Add
+</div>
+{% endblock %}
+
+{% block content_title %}
+<h1>Add videos</h1>
+{% endblock %}
+
+{% block object-tools %}
+<ul class="object-tools">
+    <li>
+        <a href="{% url 'admin:salimouse_video_changelist' %}">Back</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="video-upload-page">
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="video-upload-errors">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+        <section class="video-upload-card">
+            <h2>Files</h2>
+            <div class="video-upload-body">
+                <div class="video-upload-field">
+                    <label for="{{ form.videos.id_for_label }}">Videos</label>
+                    <div class="video-upload-picker-row">
+                        {{ form.videos }}
+                        <span class="video-upload-picker-note">Choose files to add them to the list below.</span>
+                    </div>
+                    {% if form.videos.errors %}{{ form.videos.errors }}{% endif %}
+                    <div id="video-upload-inline-error" class="video-upload-inline-error" hidden></div>
+                    <p class="video-upload-help">{{ form.videos.help_text }}</p>
+                    <p class="video-upload-help">Uploaded files will be saved to <code>static/experiment_video/</code>.</p>
+                </div>
+                <div id="video-validation-selection" class="video-upload-selection" hidden>
+                    <h3>Selected videos</h3>
+                    <div id="video-validation-selection-list" class="video-upload-selection-list"></div>
+                </div>
+            </div>
+        </section>
+        <div class="submit-row">
+            <a href="{% url 'admin:salimouse_video_changelist' %}" class="button cancel-link">Cancel</a>
+            <input type="submit" value="Upload" class="default">
+        </div>
+    </form>
+</div>
+<script>
+    (function () {
+        var input = document.getElementById("{{ form.videos.id_for_label }}");
+        var selection = document.getElementById("video-validation-selection");
+        var list = document.getElementById("video-validation-selection-list");
+        var errorBox = document.getElementById("video-upload-inline-error");
+        var dataTransfer = new DataTransfer();
+        var validationState = {};
+
+        if (!input || !selection || !list || !errorBox) {
+            return;
+        }
+
+        function setInlineError(message) {
+            errorBox.textContent = message;
+            errorBox.hidden = !message;
+        }
+
+        function syncInputFiles() {
+            input.files = dataTransfer.files;
+        }
+
+        function renderSelectedFiles() {
+            list.innerHTML = "";
+
+            if (!dataTransfer.files.length) {
+                selection.hidden = true;
+                return;
+            }
+
+            Array.prototype.forEach.call(dataTransfer.files, function (file, index) {
+                var item = document.createElement("div");
+                item.className = "video-upload-selection-item";
+
+                var meta = document.createElement("div");
+                meta.className = "video-upload-selection-meta";
+
+                var name = document.createElement("div");
+                name.className = "video-upload-selection-name";
+                name.textContent = file.name;
+
+                var label = document.createElement("label");
+                var checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.name = "validation_files";
+                checkbox.value = String(index);
+                checkbox.checked = !!validationState[file.name];
+                checkbox.addEventListener("change", function () {
+                    validationState[file.name] = checkbox.checked;
+                });
+
+                var text = document.createElement("span");
+                text.textContent = "Validation";
+
+                var remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "video-upload-remove";
+                remove.setAttribute("aria-label", "Remove " + file.name);
+                remove.textContent = "\u00d7";
+                remove.addEventListener("click", function () {
+                    var nextTransfer = new DataTransfer();
+                    Array.prototype.forEach.call(dataTransfer.files, function (existingFile, existingIndex) {
+                        if (existingIndex !== index) {
+                            nextTransfer.items.add(existingFile);
+                        }
+                    });
+                    delete validationState[file.name];
+                    dataTransfer = nextTransfer;
+                    syncInputFiles();
+                    setInlineError("");
+                    renderSelectedFiles();
+                });
+
+                label.appendChild(checkbox);
+                label.appendChild(text);
+                meta.appendChild(name);
+                var actions = document.createElement("div");
+                actions.className = "video-upload-selection-actions";
+                actions.appendChild(label);
+                actions.appendChild(remove);
+                item.appendChild(meta);
+                item.appendChild(actions);
+                list.appendChild(item);
+            });
+
+            selection.hidden = false;
+        }
+
+        input.addEventListener("change", function () {
+            var existingNames = {};
+            var duplicateNames = [];
+
+            Array.prototype.forEach.call(dataTransfer.files, function (file) {
+                existingNames[file.name] = true;
+            });
+
+            Array.prototype.forEach.call(input.files || [], function (file) {
+                if (existingNames[file.name]) {
+                    duplicateNames.push(file.name);
+                    return;
+                }
+                dataTransfer.items.add(file);
+                existingNames[file.name] = true;
+            });
+
+            if (duplicateNames.length) {
+                setInlineError(
+                    duplicateNames.length === 1
+                        ? "\"" + duplicateNames[0] + "\" is already in the list."
+                        : "These files are already in the list: " + duplicateNames.join(", ") + "."
+                );
+            } else {
+                setInlineError("");
+            }
+
+            syncInputFiles();
+            renderSelectedFiles();
+        });
+
+        renderSelectedFiles();
+    }());
+</script>
+{% endblock %}

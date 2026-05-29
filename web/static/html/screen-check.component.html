@@ -1,0 +1,29 @@
+<div id="questionsBlock" class="container horizontal-layout" style="resize: none; overflow: visible; margin-top: 2%; text-align: left;">
+    <div class="loader-block" id="loader-block" style="resize: none">
+        <div id= "questionnaireBlock" >
+            <h5>Please answer the following questions</h5>
+            <div id="questionsInnerBlock" class="question-container font-resizer">
+            </div>
+        </div>
+        <div id="descriptionBlock" class="description-block">
+            <p>To participate in the experiment, you need to <span style="color: #3495ff">calibrate the scale</span>: use a <span style="color: #3495ff">ruler</span> and adjust the segment lengths so that they match the <span style="color: #3495ff">values shown on them</span>. You can choose <span style="color: #3495ff">another method</span>: click the "another method" button and use a <span style="color: #3495ff">plastic card</span>. Place it against the screen and <span style="color: #3495ff">trace it</span> using the rectangle.</p>
+        </div>
+        <div id="rulerNotCardBlock" class="ruler-block">
+            <div id="ruler1" class="ruler" style="width: 100px;"><span id="rulerValue1"></span> cm</div>
+            <div id="ruler2" class="ruler" style="width: 90px;"><span id="rulerValue2"></span> cm</div>
+            <div id="ruler3" class="ruler" style="width: 150px;"><span id="rulerValue3"></span> cm</div>
+            <div id="ruler4" class="ruler" style="width: 120px;"><span id="rulerValue4"></span> cm</div>
+            <div id="ruler5" class="ruler" style="width: 50px;"><span id="rulerValue5"></span> cm</div>
+        </div>
+        <div id="rulerCardBlock" class="card-block">
+            <div id="card_h" class="card" style="width: 200px; height: 170px; min-height: 40px; min-width: 40px;">Place the plastic card horizontally</div>
+            <div id="card_v" class="card" style="width: 170px; height: 200px; min-height: 40px; min-width: 40px;">Place the plastic card vertically</div>
+        </div>
+        <h4 id="error_message" style= "color:red; margin-top: 20px;"></h4>
+        <div class="typesetting-bar">
+            <button id="ruler-check-button" type="button" class="btn btn-lg btn-primary button-resizer font-resizer" onclick="checkLengths()" i18n="@@ruler-check-button">Next</button>
+            <button id="rulerChangeButton" type="button" class="btn btn-lg btn-primary button-resizer font-resizer" i18n="@@ruler-change-button" onclick="changeRulers()">Another method</button>
+            <button id="helpIcon" type="button" class="btn btn-lg btn-secondary button-resizer font-resizer" i18n="@@ruler-change-button" onclick="toggleHelp()">Help</button>
+        </div>
+    </div>
+</div>

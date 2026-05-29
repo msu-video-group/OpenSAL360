@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./app_data/postgres:/var/lib/postgresql
+    env_file:
+      - ./docker/.env
+  web:
+    build: ./docker/web
+    command: ./entrypoint.sh
+    env_file:
+      - ./docker/.env
+    volumes:
+      - ./web:/code
+    ports:
+      - "0.0.0.0:80:80"
+      - "127.0.0.1:8888:8888"
+    depends_on:
+      - db

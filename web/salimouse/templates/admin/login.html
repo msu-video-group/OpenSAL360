@@ -1,0 +1,33 @@
+{% extends "admin/login.html" %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  #login-form,
+  #login-form input {
+    autocomplete: off;
+  }
+</style>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<script>
+  (function () {
+    var form = document.getElementById("login-form");
+    var usernameInput = document.getElementById("id_username");
+    var passwordInput = document.getElementById("id_password");
+
+    if (form) {
+      form.setAttribute("autocomplete", "off");
+    }
+
+    if (usernameInput) {
+      usernameInput.setAttribute("autocomplete", "off");
+    }
+
+    if (passwordInput) {
+      passwordInput.setAttribute("autocomplete", "off");
+    }
+  })();
+</script>
+{% endblock %}

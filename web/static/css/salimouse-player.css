@@ -1,0 +1,244 @@
+
+html {
+  background-color: black;
+}
+
+body {
+ background-color: black; 
+ overflow-y: hidden;
+ font-size: min(1rem, 3.8vh, 2vw);
+ cursor: default;
+ justify-content: center;
+ align-items: center;
+}
+
+#viewer { 
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+#blurCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 2;
+}
+
+#blurCanvas_dyn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 2;
+
+  inset: 0;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  mask-image: radial-gradient(
+    circle 80px at 50% 50%,
+    transparent 0%,
+    transparent 40%,
+    rgba(0,0,0,1) 70%
+  );
+
+  -webkit-mask-image: radial-gradient(
+    circle 80px at 50% 50%,
+    transparent 0%,
+    transparent 40%,
+    rgba(0,0,0,1) 70%
+  );
+}
+
+#announce{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  z-index: 3;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+#player-area {
+  overflow: hidden;
+}
+
+#player-canvas {
+  position: absolute;
+  width: 100%;
+  cursor: crosshair;
+}
+
+#player-overlay {
+  background-color: black;
+  text-align: center;
+  color: white;
+}
+
+#instructions-panel {
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  color: white;
+  overflow: hidden;
+
+  text-align: center;
+  vertical-align: middle;
+}
+
+#unsupported-browser {
+  margin-left: 25%;
+  width: 50%;
+  text-align: center;
+}
+
+.media-instruction {
+  width: 100%;
+  height: 80%;
+  margin-bottom: 10px;
+}
+
+#mouse-val-start-button {
+  position: absolute;
+}
+
+#mouse-val360-start-button {
+  position: absolute;
+}
+
+#text-shrink-1 {
+  margin-bottom: min(3.8vh, 2vw);
+}
+
+.font-resizer {
+  font-size: min(1rem, 3.8vh, 2vw);
+  /* z-index: 3; */
+}
+
+.button-resizer {
+  padding-left: min(12px, 0.3vw);
+  padding-right: min(12px, 0.3vw);
+  padding-top: min(6px, 0.6vh);
+  padding-bottom: min(6px, 0.6vh);
+}
+
+.centerer {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+#full-screen-button-layout {
+  background-color: #00000080;
+}
+
+.val-text {
+  margin: 0px;
+  width: 80%;
+}
+
+.media-centerer {
+  max-height: 100%; 
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+/* stars rating */
+
+#rating {
+  display: flex;
+  justify-content: center;
+  flex-direction: row-reverse;
+}
+
+#rating input { 
+  display: none;
+}
+
+#rating label {
+  position: relative;
+  width: 1em;
+  font-size: 6vw;
+  color: #FFD600;
+  cursor: pointer;
+}
+#rating label:before { 
+  content: "\2605";
+  position: absolute;
+  opacity: 0;
+}
+
+#rating:hover input:checked ~ label:before { 
+  opacity: 0.4; 
+}
+
+#rating label:hover:before, #rating label:hover ~ label:before {
+  opacity: 1 !important;
+}
+
+#rating input:checked ~ label:before {
+  opacity: 1;
+}
+
+#rating-block {
+  color: white;
+  line-height: normal;
+  background-color: #00000080;
+}
+
+.captcha{
+  margin-bottom: min(0.5rem, 1.7vh, 1vw);
+}
+
+.start-calibration-btn{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  padding:16px 28px;
+  font-size:18px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  z-index:10002;
+  background:#4CAF50;
+  color:white;
+  display:none;
+}
+
+.unseen-cursor {
+    /* cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="black" fill-opacity="0.3" stroke="black" stroke-opacity="0.3" stroke-width="1"/></svg>') 8 8, auto; */
+    cursor: none !important;
+}
+
+.unseen-cursor * {
+    cursor: inherit;
+}

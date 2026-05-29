@@ -1,0 +1,16 @@
+Django==2.1.5
+django-computedfields==0.0.8
+django-filter==2.0.0
+django-user-agents==0.3.2
+djangorestframework==3.9.1
+Markdown==3.0.1
+numpy==1.16.1
+pandas==0.24.2
+psycopg2-binary==2.7.7
+pytz==2018.9
+PyYAML==3.13
+ua-parser==0.8.0
+user-agents==1.1.0
+newrelic==9.8.0
+jupyter
+tqdm==4.31.1

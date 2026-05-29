@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <link rel="shortcut icon" href="#">
+
+  <!-- Disallow zooming-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  {% load staticfiles %}
+  <!-- JQuery and Popper.js -->
+  <!-- <script src="jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script> -->
+  <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+
+  <!-- Popper.js -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script> -->
+  <script src="{% static 'js/popper.min.js' %}"></script>
+
+  <!-- Bootstrap -->
+  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.j1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script> -->
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+  <!-- js-cookie -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script> -->
+  <script src="{% static 'js/js.cookie.min.js' %}"></script>
+
+    <!--three.js and panolens.js-->
+  <script src="/static/js/three.min.js"></script>
+  <script src="/static/js/panolens.min.js"></script>
+  
+  <script type="text/javascript">
+    const EXPERIMENT_ID = parseInt('{{ experiment_id }}');
+    const NUM_SEEN_VIDEOS = parseInt('{{ num_seen_videos }}');
+    const REL_BLUR_RAD = parseFloat('{{ relative_background_blur_radius }}');
+    const REL_GAZE_SIZE = parseFloat('{{ relative_gaze_size_percent }}');
+    const WITH_AUDIO = Boolean(parseInt('{{ with_audio }}'));
+    const STARS = Boolean(parseInt('{{ stars }}'));
+    const RANDOM_START = Boolean(parseInt('{{ random_start }}'));
+    const FIELD_OF_VIEW = parseFloat('{{field_of_view }}');
+    const mode = '{{ mode }}';
+    const FAST_MODE = Boolean(parseInt('{{ fast_mode }}'));
+    const UNSEEN_CURSOR = Boolean(parseInt('{{ unseen_cursor }}'));
+    const VERIFICATION_CODE_FROM_CONTEXT = '{{ verification_code|escapejs }}';
+
+    var csrftoken = Cookies.get('csrftoken');
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+  </script>
+
+  <link rel="stylesheet" href="{% static 'css/salimouse-player.css' %}">
+  <link rel="stylesheet" href="{% static 'css/screen-check.component.css' %}">
+
+  <script type="text/javascript" src="{% static 'js/salimouse-player.js' %}"></script>
+  <!-- <script type="text/javascript" src="{% static 'js/screen-check.component.js' %}"></script> -->
+</head>
+<body>
+
+{% if is_supported_ua %}
+  {% if num_seen_videos == 0 %}
+  <div id="instructions-panel" class="centerer">
+    <div id="instruction_1" style="min-height: 0; display: none; overflow-y: auto; width: 100%;">
+      <script>
+        if (FAST_MODE){
+
+        } else {
+          fetch('/static/html/screen-check.component.html')
+            .then(response => {
+              return response.text();
+            })
+            .then(html => {
+              document.getElementById('screen-check-component').innerHTML = html;
+              if (new_participation) {
+                renderQuestions();
+                $('#rulerValue1').text(rulerValue1);
+                $('#rulerValue2').text(rulerValue2);
+                $('#rulerValue3').text(rulerValue3);
+                $('#rulerValue4').text(rulerValue4);
+                $('#rulerValue5').text(rulerValue5);
+              }
+            })
+        }
+      </script> 
+      <div id="screen-check-component"></div>
+    </div>
+    <div id="instruction_2" style="min-height: 0; display: none; overflow-y: auto; width: 100%;">
+      <img id="img-distance" style="object-fit: contain" class="media-instruction"></img>
+      <p>To complete the experiment correctly, please <span style="color: #3495ff">sit upright</span> in front of the monitor at an <span style="color: #3495ff">arm's-length distance.</span></p>  
+    </div>
+    <div id="instruction_3" class="centerer" style="display: none">
+      <video id="video-mouse-val-instr" autoplay muted loop class="media-centerer" style="width: 100%"></video>
+      <div class="centerer">
+        <p id="text-shrink-1" class="val-text">
+          To continue, you need to complete a short test.
+          After pressing the "Start" button, the white square will begin moving along the trajectory currently being shown.
+          You need to <span style="color: #3495ff">keep the cursor inside the white square</span> for as long as possible. You do not need to hold the mouse button down.
+          For this test, we recommend using a <span style="color: #3495ff">computer mouse</span> (with medium DPI) instead of a touchpad.
+          The test will be repeated <span style="color: #3495ff">3 times</span>.
+          Also, after pressing the button, you will enter fullscreen mode.
+          To ensure maximum experiment accuracy, please <span style="color: #3495ff">do not leave fullscreen mode</span>.
+        </p>  
+        <button id="mouse-val-instr-button" type="button" class="btn btn-primary button-resizer font-resizer" onclick="navigation('continue')">Understood, next</button>
+      </div>
+    </div>
+    <div id="instruction_4" class="centerer" style="display: none">
+      <image id="mouse-validation-preview" class="media-centerer" style="width: 100%">
+      <div class="centerer">
+        <p id="text-shrink-2" class="val-text">
+          To continue, you need to complete a short test.
+          After pressing the "Start" button, the white square will begin moving along the trajectory currently being shown.
+          You need to <span style="color: #3495ff">keep the cursor inside the white square</span> for as long as possible. You do not need to hold the mouse button down.
+          For this test, we recommend using a <span style="color: #3495ff">computer mouse</span> (with medium DPI) instead of a touchpad.
+          The test will be repeated <span style="color: #3495ff">3 times</span>.
+          To ensure maximum experiment accuracy, please <span style="color: #3495ff">do not leave fullscreen mode</span>.
+        </p> 
+      </div>  
+      <button id="mouse-val-start-button" type="button" class="btn btn-primary button-resizer font-resizer" onclick="navigation('continue')">Start</button>
+    </div>
+    <div id="instruction_5" class="centerer" style="display: none">
+      <video id="video-mouse-validation" muted class="media-centerer" style="width: 100%">
+      </video>
+    </div>
+    <div id="instruction_6" style="width: 70%; display: none">
+      <p>
+        Unfortunately, your hardware and/or software does not allow collecting the required data with sufficient accuracy.
+        We recommend using a computer mouse (with medium DPI) instead of a touchpad next time.
+      </p>
+    </div>
+    <div id="instruction_7" class="centerer" style="display:none">
+      <div id="sensitivity-test-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black;">
+        <div style="position: absolute; top: 20px; left: 20px; color: white; font-size: 18px;">
+          <label for="fpsRange">Sensitivity: <span id="sensitivityValue">15</span></label><br>
+          <input type="range" id="fpsRange" min="0" max="200" step="1" style="width: 300px;"> </div>
+          <button id="start-calibration-btn" class="start-calibration-btn">
+            Start calibration
+          </button>
+      </div>
+    </div>
+    <div id="instruction_8" class="centerer" style="display:none">
+      <div id="validation360" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black;">
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+      
+              <svg style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 30vh;"
+                  viewBox="0 0 60 100" preserveAspectRatio="none">
+                <line x1="30" y1="0" x2="30" y2="100" stroke="white" stroke-width="3" stroke-dasharray="none"/>
+                <polygon points="30,100 20,80 40,80" fill="white"/>
+              </svg>
+              
+              <svg style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 30vh;"
+                  viewBox="0 0 60 100" preserveAspectRatio="none">
+                <line x1="30" y1="100" x2="30" y2="0" stroke="white" stroke-width="3"/>
+                <polygon points="30,0 20,20 40,20" fill="white"/>
+              </svg>
+              
+              <svg style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 30vw; height: 60px;"
+                  viewBox="0 0 100 60" preserveAspectRatio="none">
+                <line x1="0" y1="30" x2="100" y2="30" stroke="white" stroke-width="3"/>
+                <polygon points="100,30 80,20 80,40" fill="white"/>
+              </svg>
+              
+              <svg style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 30vw; height: 60px;"
+                  viewBox="0 0 100 60" preserveAspectRatio="none">
+                <line x1="100" y1="30" x2="0" y2="30" stroke="white" stroke-width="3"/>
+                <polygon points="0,30 20,20 20,40" fill="white"/>
+              </svg>
+              
+            </div>
+
+          <div id="val360-instruction"
+              style="position: absolute;
+                      top: 40%;
+                      left: 50%;
+                      transform: translate(-50%, calc(-50% - 120px));
+                      max-width: 630px;
+                      width: 70%;
+                      background: rgba(0,0,0,0.85);
+                      color: white;
+                      padding: 22px 26px;
+                      border-radius: 8px;
+                      text-align: center;
+                      font-size: 16px;
+                      z-index: 5;
+                      pointer-events: none;
+                      line-height: 1.2;
+                      margin: 0;">
+            To continue, you need to complete a short test.
+            
+            After pressing the <b>"Start"</b> button, the white circle will begin moving.
+            You need to <span style="color: #3495ff">keep the circle between the white arrows</span> for as long as possible,<br>
+            by rotating the panorama.
+            
+            For this test, we recommend using
+            <span style="color: #3495ff">computer mouse</span>
+            (with medium DPI) instead of a touchpad.
+            
+            The test will be repeated <span style="color: #3495ff">3 times</span>.
+            
+            To ensure maximum experiment accuracy, please
+            <span style="color: #3495ff">do not leave fullscreen mode</span>.
+          </div>
+         <button id="mouse-val360-start-button"
+                type="button"
+                class="btn btn-primary button-resizer font-resizer"
+                style="position: absolute;
+                      top: 50%;
+                      left: 50%;
+                      transform: translate(-50%, -50%);
+                      font-size: 18px;
+                      ">
+            Start
+        </button>
+        <button id="return_to_sensitivity_control"
+                type="button"
+                class="btn btn-primary button-resizer font-resizer"
+                style="position: absolute;
+                      top: 60%;
+                      left: 50%;
+                      transform: translate(-50%, calc(-50% + 50px));;
+                      font-size: 18px;
+                      ">
+            Return to sensitivity settings
+        </button>
+      </div>
+    </div>
+    <div id="instruction_9" style="min-height: 0; display: none">
+      <video id="video-instruction1" muted loop class="media-instruction"> 
+      </video>
+      <p id="text-instruction1">The image in the center has the highest sharpness. By rotating the panorama, you can better examine individual objects in the video.</p>  
+    </div>
+    <div id="instruction_10" style="min-height: 0; display: none">
+      <video id="video-instruction2" muted loop class="media-instruction"> 
+      </video>
+      <p id="text-instruction2">You can interact with the panorama using a computer mouse.</p>
+    </div>
+    <div id="instruction_11" style="min-height: 0; display: none">
+      <video id="video-instruction3" muted loop class="media-instruction"> 
+      </video>
+      <p id="text-instruction3">If a more interesting object appears in the frame, move the center toward it.</p>
+    </div>
+    <div id="instruction_12" style="min-height: 0; display: none">
+      <video id="video-instruction4" muted loop class="media-instruction"> 
+      </video>
+      <p id="text-instruction4">If there are several objects in the frame, follow the one you currently find most interesting.</p>
+    </div>
+    <div id="instruction_13" style="min-height: 0; display: none">
+      <img id="img-stars" class="media-instruction"></img>
+      <p>After watching the video, please indicate how much you liked it.</p>  
+    </div>
+    <button id="continue-button" type="button" class="btn btn-primary button-resizer font-resizer" style="margin-bottom: 20px; display: none;" onclick="navigation('continue')">Understood, next</button>
+  </div>
+  {% endif %}
+  
+  <div id="viewer" class="centerer"> 
+      <div id="downloading-panel" style="display: none; z-index: 3; position: absolute; color: white;">
+        <p>Loading videos (<span id="downloaded-videos-counter">0</span> of <span id="total-videos-counter">0</span>).</p>
+      </div>
+      
+      <div id="downloaded-panel" style="display: none; z-index: 3; position: absolute; color: white;">
+        <p>All (<span id="total-videos-downloaded">10</span>) videos have been loaded.</p>
+        <button id="start-button" type="button" class="btn btn-primary button-resizer font-resizer"  onclick="startViewing()">Start viewing</button>
+        <p style="margin: 1em 0 0;">&shy;</p>
+      </div>
+      
+      <div id="no-videos-to-download-panel" style="display: none; z-index: 3; position: absolute; color: white;">
+        <p>You have already watched all the videos before and currently cannot participate in this experiment.</p>
+        {% if verification_code %}
+        <p>Payment will be made if the experiment is completed successfully.</p>
+        <p>
+          Enter the following code on the website: 
+          <span id="verification-code" data-verification-code style="color: #3495ff; cursor: pointer;">
+          </span>
+        </p>
+        <p id="copy-hint" style="font-size: 14px; opacity: 0.7;">
+          Click the code to copy it
+        </p>
+        {% endif %}
+      </div>
+      
+      <form id="audio-captcha" class='centerer' style="display: none; z-index: 3; position: absolute; color: white" onsubmit="return verifyCaptcha()">
+        <p>
+          Some videos will play with sound.<br>
+          Please <span style="color: #3495ff">turn on the sound</span>, set it to a comfortable level, and <span style="color: #3495ff">do not turn it off</span> until the experiment is finished.
+        </p>
+        <label class="captcha" for="captcha">Please enter the text you hear in the audio:</label>
+        <audio id="captcha-controls" class="captcha" controls>
+          <source id="captcha-src" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+        <input id="captcha" class="captcha" type="text" name="captcha" maxlength="4" minlength="4" placeholder="0000" required>
+        <input class="btn btn-primary button-resizer font-resizer" type="submit" value="Check">
+      </form>
+
+      <div id="announce" style="display: none">
+        <div id="next-video-announce" style = "color: white;">
+          <p>Get ready. The next video #<span id="next-video-number"></span> will start in <span id="next-video-timer"></span> sec.</p>
+        </div>
+      </div>
+
+      <div id="preview-timer-block" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; color: white; font-size: 24px; text-align: center; pointer-events: none;">
+          <p>The video will start playing in <span id="preview-seconds">0</span> seconds</p>
+      </div>
+
+      <!-- <div id="next-preview-announce" style="display: none">
+        <p>Get ready. Preview of video #<span id="next-preview-number"></span> will start in <span id="next-preview-timer"></span> sec.</p>
+      </div> -->
+
+      <div id="final-panel" style="display: none; z-index: 3; position: absolute; color: white;">
+        <p>You have finished watching.</p>
+        <p>Payment will be made if the experiment is completed successfully.</p>
+        <p>
+          Enter the following code on the website: 
+          <span id="verification-code" data-verification-code style="color: #3495ff; cursor: pointer;">
+          </span>
+        </p>
+        <p id="copy-hint" style="font-size: 14px; opacity: 0.7;">
+          Click the code to copy it
+        </p>
+      </div>
+  
+  <div id="rating-block" class="centerer" style="display: none; z-index: 4; position: absolute;">
+    <p>Please rate the watched video to proceed to the next one:</p>
+    <div id="rating">
+      <input type="radio" name="rating" value="5" id="rating-5" onclick="ReceiveRating()">
+      <label for="rating-5">☆</label>
+      <input type="radio" name="rating" value="4" id="rating-4" onclick="ReceiveRating()">
+      <label for="rating-4">☆</label>
+      <input type="radio" name="rating" value="3" id="rating-3" onclick="ReceiveRating()">
+      <label for="rating-3">☆</label>
+      <input type="radio" name="rating" value="2" id="rating-2" onclick="ReceiveRating()">
+      <label for="rating-2">☆</label>
+      <input type="radio" name="rating" value="1" id="rating-1" onclick="ReceiveRating()">
+      <label for="rating-1">☆</label>
+    </div>
+  </div>
+  </div>
+
+  <div id="load-error" class="centerer" style="color: white; text-align: center; background-color: black; display: none">
+    <p>
+      There was a problem loading the video.<br>
+      Please reload the page and try again.
+    </p>
+  </div>
+
+  <div id="fullscreenRequest" class="player-container text-center centerer" style="color: white; background-color: #000000a0; display: none; z-index: 5;">
+    <h3 i18n="@@please-switch-to-fullscreen">Please switch to <span style="color: #3495ff">fullscreen mode</span> to continue</h3>
+    <button id="best-none" class="btn btn-lg btn-primary button-resizer font-resizer" onclick="enterFullScreen()" i18n="@@switch-to-fullscreen">
+      Fullscreen mode
+    </button>
+  </div>
+  <div id="noDevtoolsRequest" class="player-container text-center centerer" style="color: white; background-color: #000000a0; display: none;  z-index: 5;">
+      <h3 i18n="@@please-close-devtools">
+        Please set the <span style="color: #3495ff">zoom</span> in your browser to 
+        <span style="color: #3495ff">100%</span> or <span style="color: #3495ff">close the developer tools</span> if they are open
+      </h3>
+      <button id="helpIcon" type="button" class="btn btn-lg btn-secondary button-resizer font-resizer" i18n="@@ruler-change-button" onclick="toggleHelp()">Help</button>
+  </div>
+  {% if not fast_mode %}
+    <div id="helpBlock" class="centerer" style="background-color: #000000a0;">
+      <div class="help-popup" style="color: black;">
+        <button class="close-button" onclick="toggleHelp()">×</button>
+        <div class="help-content" style="text-align: justify;">
+            <h4>Website usage guide</h4>
+            <h5>Thank you for deciding to take part in the study. This study is dedicated to developing <span style="color: #3495ff">methods for generating saliency maps</span>.</h5>
+            <h5>
+              Make sure the page is set to <span style="color: #3495ff">100% zoom</span> and the browser is open in 
+              <span style="color: #3495ff">fullscreen</span>; you can change the zoom using Ctrl + mouse wheel scrolling.
+            </h5>
+            <div class="img-block">
+                <img id="100-prc" style="width: 20%; border: 2px solid green; border-radius: 4px;">
+                <img id="125-prc" style="width: 20%; border: 2px solid red; border-radius: 4px;">
+            </div>
+
+            <h5>
+              Before the video is shown, you will be given a screen-size measurement test (performed using 
+              a <span style="color: #3495ff">ruler</span> or a standard <span style="color: #3495ff">business/plastic card</span>), 
+              as well as a short questionnaire about color perception. The number of screen measurement attempts is <span style="color: #3495ff">limited</span>, so please do not guess the dimensions. 
+              To change the ruler length or card size, <span style="color: #3495ff">drag</span> the corresponding area by the handle in the <span style="color: #3495ff">lower-right corner</span>.
+            </h5>
+            
+            <h4>Measurement examples:</h4>
+            <div class="img-block">
+                <img id="rules" style="width: 50%;">
+                <img id="cards" style="width: 30%;">
+            </div>
+  
+          <h5>
+            If you have a MacBook model with a <span style="color: #3495ff">notch at the top</span> in the center of the screen, you need to <span style="color: #3495ff">temporarily disable it</span> to complete the experiment correctly.
+            To do this, follow these <span style="color: #3495ff">instructions</span>:
+            <ul>
+              <li>Install <span style="color: #3495ff">macOS 13.3 Ventura</span> or earlier if you have not already done so</li>
+              <li>Open <span style="color: #3495ff">System Settings</span></li>
+              <li>Go to <span style="color: #3495ff">Displays</span></li>
+              <li>Click <span style="color: #3495ff">Advanced</span></li>
+              <li>Enable the <span style="color: #3495ff">Show list of resolutions</span> toggle, then click <span style="color: #3495ff">Done</span> at the bottom</li>
+              <li>In the main window, enable the <span style="color: #3495ff">Show all resolutions</span> toggle</li>
+              <li>Select a resolution with a <span style="color: #3495ff">16:10 aspect ratio</span>, for example <span style="color: #3495ff">1470×918</span></li>
+            </ul>
+            To <span style="color: #3495ff">restore the notch behavior</span>, choose the resolution that was set by default.
+            <div class="img-block" style="display: flex; justify-content: center">
+              <img id="mac_instruction" style="width: 65%;">
+            </div>
+
+          </h5>
+          
+            <button onclick="toggleHelp()" class="btn btn-secondary button-resizer font-resizer">Close</button>
+        </div>
+      </div>  
+    </div>
+  {% else %}
+        <div id="helpBlock" class="centerer" style="background-color: #000000a0;">
+      <div class="help-popup" style="color: black;">
+        <button class="close-button" onclick="toggleHelp()">×</button>
+        <div class="help-content" style="text-align: justify;">
+            <h4>Website usage guide</h4>
+            <h5>Thank you for deciding to take part in the study. This study is dedicated to developing <span style="color: #3495ff">methods for generating saliency maps</span>.</h5>
+            <h5>
+              Make sure the page is set to <span style="color: #3495ff">100% zoom</span> and the browser is open in 
+              <span style="color: #3495ff">fullscreen</span>; you can change the zoom using Ctrl + mouse wheel scrolling.
+            </h5>
+            <div class="img-block">
+                <img id="100-prc" style="width: 20%; border: 2px solid green; border-radius: 4px;">
+                <img id="125-prc" style="width: 20%; border: 2px solid red; border-radius: 4px;">
+            </div>
+            
+            <button onclick="toggleHelp()" class="btn btn-secondary button-resizer font-resizer">Close</button>
+        </div>
+      </div>  
+    </div>
+  {% endif %}
+
+</div>
+
+{% else %}
+  <div id="unsupported-browser">
+    <div class="alert alert-danger" role="alert">
+      <p>The browser you are using is not suitable for completing this task.</p>
+      <p>Please use one of the following browsers: Google Chrome, Mozilla Firefox, Opera, or Yandex.Browser.</p>
+    </div>
+  </div>
+{% endif %}
+
+</body>
+</html>
+
+

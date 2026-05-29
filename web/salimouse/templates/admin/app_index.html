@@ -1,0 +1,10 @@
+{% extends "admin/app_index.html" %}
+
+{% block content %}
+<ul class="object-tools">
+    <li>
+        <a href="{% url 'admin:index' %}">Back</a>
+    </li>
+</ul>
+{{ block.super }}
+{% endblock %}
