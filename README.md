@@ -27,10 +27,10 @@ The dataset collected with OpenSAL360, comprising 500 videos, is publicly availa
 
 ## What It Offers :stars:
 
-- Browser-based participant experience with no custom client installation
-- Researcher-friendly Django admin interface
+- Browser-based user interface without any VR specific requirements
+- Admin panel with precise experiment configuration
 - Video upload and experiment configuration workflow
-- Mouse-based saliency collection for omnidirectional videos
+- Crowdsourcing-based saliency collection for omnidirectional videos
 - Export and processing pipeline for fixations and saliency maps
 
 ## Quick Start :rocket:
