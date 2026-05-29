@@ -26,6 +26,7 @@ services:
     volumes:
       - ./docker/nginx/entrypoint.sh:/entrypoint.sh:ro
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./web/static/experiment_video:/home/web/experiment_video
       - ./app_data/web_static:/home/web/static
       - ./app_data/certbot/conf:/etc/letsencrypt
       - ./app_data/certbot/www:/var/www/certbot
