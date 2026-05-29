@@ -54,3 +54,4 @@ Extended documentation is available in the [GitHub Wiki](https://github.com/msu-
 - [Data Models](https://github.com/msu-video-group/VideoSaliency360/wiki/Data-Models)
 - [Processing](https://github.com/msu-video-group/VideoSaliency360/wiki/Processing)
 - [Backup and Restore](https://github.com/msu-video-group/VideoSaliency360/wiki/Backup-and-Restore)
+- [Methodology Supplementary](https://github.com/msu-video-group/VideoSaliency360/wiki/Methodology-Supplementary)
