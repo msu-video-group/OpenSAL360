@@ -1,7 +1,5 @@
 # OpenSAL360
 
-[![Dataset](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md.svg)](https://huggingface.co/datasets/ANDRYHA/OpenSAL360)
-
 An open-source web platform for collecting mouse-based saliency data on omnidirectional videos.
 
 OpenSAL360 provides a streamlined browser-based workflow for saliency crowdsourcing experiments, together with tools for transforming mouse-based gaze data into fixations and saliency maps.
@@ -21,6 +19,7 @@ You can explore a live version of OpenSAL360 through our public demo. Completing
 [Open the live demo](http://saliency.subjectify.online/experiment/1/)
 
 ## Dataset :card_index_dividers:
+[![Dataset](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md.svg)](https://huggingface.co/datasets/ANDRYHA/OpenSAL360)
 
 The dataset collected with OpenSAL360, comprising 500 videos, is publicly available on Hugging Face:
 
