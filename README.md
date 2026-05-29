@@ -6,7 +6,7 @@ An open-source web platform for collecting mouse-based saliency data on omnidire
 
 OpenSAL360 provides a streamlined browser-based workflow for saliency crowdsourcing experiments, together with tools for transforming mouse-based gaze data into fixations and saliency maps.
 
-<img width="1955" height="963" alt="OpenSal360" src="https://github.com/user-attachments/assets/2c9e7aff-deac-4df8-abdd-075f72aef176" />
+<img width="1957" height="962" alt="OpenSal360" src="https://github.com/user-attachments/assets/a7f433fb-de6e-41bb-aebd-9d6f415924c9" />
 
 ## Demo Video :clapper:
 
