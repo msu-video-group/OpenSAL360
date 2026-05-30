@@ -1,8 +1,8 @@
 # OpenSAL360
 
-An open-source web platform for collecting mouse-based saliency data on omnidirectional videos.
+An open-source crowdsourcing platform for omnidirectional video saliency collection.
 
-OpenSAL360 provides a streamlined browser-based workflow for saliency crowdsourcing experiments, together with tools for transforming mouse-based gaze data into fixations and saliency maps.
+OpenSAL360 provides a streamlined browser-based workflow for crowdsourced saliency experiments, along with tools for transforming collected viewport movement data into fixations and saliency maps.
 
 <img width="1957" height="962" alt="OpenSal360" src="https://github.com/user-attachments/assets/a7f433fb-de6e-41bb-aebd-9d6f415924c9" />
 
@@ -27,11 +27,11 @@ The dataset collected with OpenSAL360, comprising 500 videos, is publicly availa
 
 ## What It Offers :stars:
 
-- Browser-based user interface without any VR specific requirements
-- Admin panel with precise experiment configuration
-- Video upload and experiment configuration workflow
-- Crowdsourcing-based saliency collection for omnidirectional videos
-- Export and processing pipeline for fixations and saliency maps
+- Browser-based user interface without any VR-specific requirements;
+- Admin panel with precise experiment configuration;
+- Video upload and experiment configuration workflow;
+- Crowdsourcing-based saliency collection for omnidirectional videos;
+- Export and processing pipeline for fixations and saliency maps;
 
 ## Quick Start :rocket:
 
@@ -55,3 +55,16 @@ Extended documentation is available in the [GitHub Wiki](https://github.com/msu-
 - [Processing](https://github.com/msu-video-group/VideoSaliency360/wiki/Processing)
 - [Backup and Restore](https://github.com/msu-video-group/VideoSaliency360/wiki/Backup-and-Restore)
 - [Methodology Supplementary](https://github.com/msu-video-group/VideoSaliency360/wiki/Methodology-Supplementary)
+
+## Contributing :handshake:
+OpenSAL360 is designed as an open-source platform for scalable saliency data collection and reproducible research on omnidirectional video saliency. We welcome contributions from everyone interested in improving the platform and extending its use in immersive multimedia research. Possible contributions include, but are not limited to:
+
+- Improving the web interface and experiment workflow;
+- Adding new data collection or annotation scenarios;
+- Extending the processing pipeline for fixations and saliency maps;
+- Improving deployment, documentation, and usability;
+- Reporting bugs, suggesting features, or sharing use cases.
+
+We believe that an open platform can accelerate the collection of diverse omnidirectional video saliency datasets and support the development of more generalizable, high-quality saliency prediction models for real-world immersive multimedia applications.
+
+To contribute, please open an issue or submit a pull request!
