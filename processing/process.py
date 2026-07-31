@@ -14,8 +14,11 @@ def main():
 	parser.add_argument('--views_path', type=str, help='Path to views data')
 	parser.add_argument('--path_metadata', type=str, help='Path to metadata')
 	parser.add_argument('--path_result', type=str, help='Path to result')
-	parser.add_argument('--height', type=int, default=100)
-	parser.add_argument('--width', type=int, default=200)
+	parser.add_argument('--height', type=int, default=100, help='The height of the salience map')
+	parser.add_argument('--width', type=int, default=200, help='The width of the salience map)
+	parser.add_argument('--tr_freq', type=int, default=3, help='Frequency threshold')
+	parser.add_argument('--shift', type=int, default=300, help='Shift, ms')
+	parser.add_argument('--crop', type=int, default=1500, help='Trimming, ms')
 	
 	args = parser.parse_args()
 	
@@ -25,6 +28,9 @@ def main():
 	path_result = args.path_result
 	height = args.height
 	width = args.width
+	tr_freq = args.tr_freq
+	shift = args.shift
+	crop = args.crop
 
 	views_folder_name = os.path.basename(views_path)
 
@@ -37,7 +43,7 @@ def main():
 		sys.executable, 'freq_filt_360.py',
 		'--path_data', views_path,
 		'--path_out', f"{views_path}_filt",
-		'--tr_freq', '3',
+		'--tr_freq', tr_freq,
 		'--path_metadata', path_metadata
 	])
 	
@@ -52,8 +58,8 @@ def main():
 		sys.executable, 'uni_freq_360.py',
 		'--path_data', f"{views_path}_filt",
 		'--path_out', f"{views_path}_filt_uni",
-		'--shift', '300',
-		'--crop', '1500',
+		'--shift', shift,
+		'--crop', crop,
 		'--path_metadata', path_metadata
 	])
 	
