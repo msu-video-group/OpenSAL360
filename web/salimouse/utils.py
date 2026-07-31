@@ -1,4 +1,3 @@
-from ua_parser import user_agent_parser
 import uuid
 from itertools import chain
 import numpy as np
@@ -13,32 +12,6 @@ def get_or_none(model, *args, **kwargs):
     return queryset[0] if len(queryset) else None
 
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        client_ip = x_forwarded_for.split(',')[-1].strip()
-    else:
-        client_ip = request.META.get('REMOTE_ADDR')
-    return client_ip
-
-
-def get_client_ua(request):
-    return request.META.get('HTTP_USER_AGENT')
-
-
-def get_parsed_client_ua(request):
-    return user_agent_parser.Parse(request.META.get('HTTP_USER_AGENT'))
-
-
-UA_FAMILY_BLACKLIST = ('IE')
-
-
-def is_supported_ua(ua_parsed):
-    try:
-        family = ua_parsed['user_agent']['family']
-        return family not in UA_FAMILY_BLACKLIST
-    except KeyError:
-        return True
 
 def get_weights(video_batches, video_id_to_count, num_views_by_video, num_videos_by_obs, cut_overselect=False, verbose=False):
     counts = np.array([
@@ -127,14 +100,8 @@ def generate_videos_set(experiment):
 
 
 def get_participation_title(self):
-    res = '#{:03d} E:{:03d} {}'.format(
-        self.id, self.experiment.id, self.login_ip)
-
-    try:
-        ua = self.login_user_agent_parsed['user_agent']
-        res += ' ' + ua['family'] + ua['major']
-    except KeyError:
-        pass
+    res = '#{:03d} E:{:03d}'.format(
+        self.id, self.experiment.id)
 
     res += ' ' + str(self.uuid)
 

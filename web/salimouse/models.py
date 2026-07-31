@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from computedfields.models import ComputedFieldsModel, computed
-from ua_parser import user_agent_parser
 from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
@@ -106,12 +105,6 @@ class Participation(ComputedFieldsModel):
     rotate_speed = models.FloatField(null=True, blank=True, default=None)
 
     login_server_timestamp = models.DateTimeField(auto_now=True)
-    login_user_agent = models.TextField()
-    login_ip = models.GenericIPAddressField(unpack_ipv4=True)
-
-    @computed(JSONField(default=dict))
-    def login_user_agent_parsed(self):
-        return user_agent_parser.Parse(self.login_user_agent)
 
     login_client_timestamp = models.DateTimeField(null=True)
     login_client_info = JSONField()

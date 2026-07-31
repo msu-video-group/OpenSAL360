@@ -15,7 +15,7 @@ from salimouse.models import Video, Participation, Experiment, VideoView
 from salimouse.serializers import VideoSerializer, ParticipationCreateRequestSerializer, VideoViewClientDataSerializer, ParticipationReactInfoSerializer, ParticipationQuestionsInfoSerializer, ParticipationAllInfoSerializer, ParticipationAdminModeSerializer, ParticipationRotateSpeedSerializer
 
 from . import utils
-from .utils import get_or_none, get_client_ip, get_client_ua, generate_videos_set, get_parsed_client_ua, get_active_participation
+from .utils import get_or_none, generate_videos_set, get_active_participation
 import uuid
 
 
@@ -25,8 +25,6 @@ def experiment(request, experiment_id):
     if not experiment:
         return HttpResponse('Experiment not found', status=status.HTTP_404_NOT_FOUND)
 
-    ua_parsed = utils.get_parsed_client_ua(request)
-    is_supported_ua = utils.is_supported_ua(ua_parsed)
     relative_background_blur_radius = experiment.relative_background_blur_radius
     relative_gaze_size_percent = experiment.relative_gaze_size_percent
     with_audio = experiment.with_audio
@@ -37,8 +35,7 @@ def experiment(request, experiment_id):
     fast_mode = experiment.fast_mode
     unseen_cursor = experiment.unseen_cursor
     context = {
-        'experiment_id': experiment_id,
-        'is_supported_ua': is_supported_ua,
+        'experiment_id': experiment_id,,
         'num_seen_videos': 0,
         'verification_code': '',
         'relative_background_blur_radius': float(relative_background_blur_radius),
@@ -94,8 +91,6 @@ def participation_create_request(request, experiment_id=None, format=None):
         participation = Participation()
         participation.experiment = experiment
         participation.uuid = participation_uuid
-        participation.login_user_agent = get_client_ua(request)
-        participation.login_ip = get_client_ip(request)
 
         participation.login_client_timestamp = client_data['timestamp']
         participation.login_client_info = client_data['client_info']

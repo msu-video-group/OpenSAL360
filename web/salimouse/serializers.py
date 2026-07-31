@@ -30,8 +30,7 @@ class ParticipationQuestionsInfoSerializer(serializers.ModelSerializer):
 class ParticipationAllInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participation
-        fields = ('experiment', 'uuid', 'activation_code', 'login_server_timestamp', 'login_user_agent', 
-                  'login_ip', 'login_client_timestamp', 'login_client_info', 'react_info', 'questions_info')
+        fields = ('experiment', 'uuid', 'activation_code', 'login_server_timestamp', 'login_client_timestamp', 'login_client_info', 'react_info', 'questions_info')
 
 
 class VideoViewSerializer(serializers.ModelSerializer):
