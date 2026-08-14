@@ -8,6 +8,19 @@ class MultiFileInput(ClearableFileInput):
     allow_multiple_selected = True
 
 
+class MultipleFileField(forms.FileField):
+    widget = MultiFileInput
+
+    def clean(self, data, initial=None):
+        clean_one_file = super().clean
+        if isinstance(data, (list, tuple)):
+            if not data:
+                cleaned = clean_one_file(None, initial)
+                return [] if cleaned is None else [cleaned]
+            return [clean_one_file(file_data, initial) for file_data in data]
+        return [clean_one_file(data, initial)]
+
+
 class ExperimentAdminForm(forms.ModelForm):
     class Meta:
         model = Experiment
@@ -26,7 +39,7 @@ class ExperimentAdminForm(forms.ModelForm):
 
 
 class VideoAdminUploadForm(forms.Form):
-    videos = forms.FileField(
+    videos = MultipleFileField(
         widget=MultiFileInput(attrs={"multiple": True}),
         help_text="Upload one or more videos. Non-MP4 files will be converted to MP4 if ffmpeg is available.",
     )

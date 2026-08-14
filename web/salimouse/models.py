@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields import JSONField
 from computedfields.models import ComputedFieldsModel, computed
 from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -107,10 +106,10 @@ class Participation(ComputedFieldsModel):
     login_server_timestamp = models.DateTimeField(auto_now=True)
 
     login_client_timestamp = models.DateTimeField(null=True)
-    login_client_info = JSONField()
+    login_client_info = models.JSONField()
 
-    react_info = JSONField(default=dict)
-    questions_info = JSONField(default=dict)
+    react_info = models.JSONField(default=dict)
+    questions_info = models.JSONField(default=dict)
 
     completed = models.BooleanField(default=False)
     admin_mode = models.BooleanField(default=False)
@@ -142,8 +141,8 @@ class VideoView(models.Model):
     server_timestamp = models.DateTimeField(null=True)
     client_timestamp_start = models.DateTimeField(null=True)
     client_timestamp_finish = models.DateTimeField(null=True)
-    data_gazes = JSONField(default=dict)
-    data_fps = JSONField(default=dict)
+    data_gazes = models.JSONField(default=dict)
+    data_fps = models.JSONField(default=dict)
     video_score = models.IntegerField(default=0)
 
     @property
@@ -168,4 +167,4 @@ class VideoViewChunkData(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     timestamp_server = models.DateTimeField()
     timestamp_client = models.DateTimeField()
-    client_data = JSONField(default=dict)
+    client_data = models.JSONField(default=dict)

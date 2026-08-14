@@ -52,7 +52,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'salimouse_site.urls'
@@ -122,9 +121,21 @@ TIME_ZONE = get_env('TIME_ZONE', default='Europe/Moscow')
 
 USE_I18N = True
 
-USE_L10N = True
-
 USE_TZ = True
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+SECURE_PROXY_SSL_HEADER = (
+    ('HTTP_X_FORWARDED_PROTO', 'https')
+    if get_bool_env('SECURE_PROXY_SSL_HEADER', default=False)
+    else None
+)
+SECURE_SSL_REDIRECT = get_bool_env('SECURE_SSL_REDIRECT', default=False)
+SESSION_COOKIE_SECURE = get_bool_env('SESSION_COOKIE_SECURE', default=False)
+CSRF_COOKIE_SECURE = get_bool_env('CSRF_COOKIE_SECURE', default=False)
+SECURE_HSTS_SECONDS = int(get_env('SECURE_HSTS_SECONDS', default=0))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = get_bool_env('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False)
+SECURE_HSTS_PRELOAD = get_bool_env('SECURE_HSTS_PRELOAD', default=False)
 
 
 # Static files (CSS, JavaScript, Images)

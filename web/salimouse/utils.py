@@ -2,9 +2,15 @@ import uuid
 from itertools import chain
 import numpy as np
 import salimouse.models
-from django.db.models import Q, Count
+from django.conf import settings
+from django.db.models import Count, F, Max
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 from datetime import timedelta
+
+
+PARTICIPANT_COOKIE_NAME = 'salimouse_participant'
+PARTICIPANT_COOKIE_SALT = 'salimouse.participant'
 
 
 def get_or_none(model, *args, **kwargs):
@@ -116,23 +122,66 @@ def get_participation_title(self):
     return res
 
 
-def get_or_create_participant_uuid(request):
+def get_participant_uuid(request):
     participation_uuid = request.session.get('participation_uuid')
+    if participation_uuid is None:
+        participation_uuid = request.get_signed_cookie(
+            PARTICIPANT_COOKIE_NAME,
+            default=None,
+            salt=PARTICIPANT_COOKIE_SALT,
+            max_age=settings.SESSION_COOKIE_AGE,
+        )
+
+    if participation_uuid is None:
+        return None
+
+    try:
+        participation_uuid = uuid.UUID(str(participation_uuid))
+    except (TypeError, ValueError, AttributeError):
+        return None
+
+    request.session['participation_uuid'] = str(participation_uuid)
+    return participation_uuid
+
+
+def get_or_create_participant_uuid(request):
+    participation_uuid = get_participant_uuid(request)
     if participation_uuid is None:
         participation_uuid = uuid.uuid4()
         request.session['participation_uuid'] = str(participation_uuid)
     return participation_uuid
 
+
+def set_participant_cookie(response, participation_uuid):
+    response.set_signed_cookie(
+        PARTICIPANT_COOKIE_NAME,
+        str(participation_uuid),
+        salt=PARTICIPANT_COOKIE_SALT,
+        max_age=settings.SESSION_COOKIE_AGE,
+        secure=settings.SESSION_COOKIE_SECURE,
+        httponly=True,
+        samesite=settings.SESSION_COOKIE_SAMESITE,
+    )
+
 def get_active_participation(participation_uuid, experiment_id):
     two_hours_ago = timezone.now() - timedelta(hours=2)
-    # Extract only unpaid participations (paid have activation='blah blah blah')
-    # Exclude those participations whose last seen videos where >2 hours ago
-    participation = salimouse.models.Participation.objects.filter(
-        Q(videoview__seen=False) |
-        Q(videoview__server_timestamp__gte=two_hours_ago),
-        uuid=participation_uuid,
-        experiment=experiment_id,
-        activation_code=''
-    ).first()
-
-    return participation
+    # A participation can be resumed for two hours after its latest submitted
+    # video. Before the first video, use the participation creation/update time.
+    # Unseen videos must not keep an abandoned participation active forever.
+    return (
+        salimouse.models.Participation.objects
+        .filter(
+            uuid=participation_uuid,
+            experiment_id=experiment_id,
+            activation_code='',
+        )
+        .annotate(
+            last_activity=Coalesce(
+                Max('videoview__server_timestamp'),
+                F('login_server_timestamp'),
+            ),
+        )
+        .filter(last_activity__gte=two_hours_ago)
+        .order_by('-last_activity', '-id')
+        .first()
+    )
