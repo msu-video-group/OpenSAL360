@@ -1,13 +1,12 @@
-FROM python:3.7
+FROM python:3.12-slim
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update && \
-    apt-get install -y ffmpeg && \
+    apt-get install -y --no-install-recommends ffmpeg && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /code
 WORKDIR /code
 COPY requirements.txt /code/
-RUN pip install -r requirements.txt
-RUN pip install gunicorn
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . /code/
