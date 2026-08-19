@@ -41,20 +41,20 @@ The dataset collected with OpenSAL360, comprising 500 videos, is publicly availa
 4. Open the admin panel at `http://localhost/admin/`, then add videos and create an experiment.
 5. Open the platform at `http://localhost/`.
 
-See [Local Quick Start](https://github.com/msu-video-group/VideoSaliency360/wiki/Local-Quick-Start) for the full setup details.
+See [Local Quick Start](https://github.com/msu-video-group/OpenSAL360/wiki/Local-Quick-Start) for the full setup details.
 
 ## Documentation :books:
 
-Extended documentation is available in the [GitHub Wiki](https://github.com/msu-video-group/VideoSaliency360/wiki):
+Extended documentation is available in the [GitHub Wiki](https://github.com/msu-video-group/OpenSAL360/wiki):
 
-- [Wiki Home](https://github.com/msu-video-group/VideoSaliency360/wiki)
-- [Local Quick Start](https://github.com/msu-video-group/VideoSaliency360/wiki/Local-Quick-Start)
-- [Production Deployment](https://github.com/msu-video-group/VideoSaliency360/wiki/Production-Deployment)
-- [Admin Guide](https://github.com/msu-video-group/VideoSaliency360/wiki/Admin-Guide)
-- [Data Models](https://github.com/msu-video-group/VideoSaliency360/wiki/Data-Models)
-- [Processing](https://github.com/msu-video-group/VideoSaliency360/wiki/Processing)
-- [Backup and Restore](https://github.com/msu-video-group/VideoSaliency360/wiki/Backup-and-Restore)
-- [Methodology Supplementary](https://github.com/msu-video-group/VideoSaliency360/wiki/Methodology-Supplementary)
+- [Wiki Home](https://github.com/msu-video-group/OpenSAL360/wiki)
+- [Local Quick Start](https://github.com/msu-video-group/OpenSAL360/wiki/Local-Quick-Start)
+- [Production Deployment](https://github.com/msu-video-group/OpenSAL360/wiki/Production-Deployment)
+- [Admin Guide](https://github.com/msu-video-group/OpenSAL360/wiki/Admin-Guide)
+- [Data Models](https://github.com/msu-video-group/OpenSAL360/wiki/Data-Models)
+- [Processing](https://github.com/msu-video-group/OpenSAL360/wiki/Processing)
+- [Backup and Restore](https://github.com/msu-video-group/OpenSAL360/wiki/Backup-and-Restore)
+- [Methodology Supplementary](https://github.com/msu-video-group/OpenSAL360/wiki/Methodology-Supplementary)
 
 ## Contributing :handshake:
 OpenSAL360 is designed as an open-source platform for scalable saliency data collection and reproducible research on omnidirectional video saliency. We welcome contributions from everyone interested in improving the platform and extending its use in immersive multimedia research. Possible contributions include, but are not limited to:
