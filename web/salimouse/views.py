@@ -71,7 +71,6 @@ def index(request):
         return HttpResponse('There are no active experiments', status=status.HTTP_404_NOT_FOUND)
 
 
-@csrf_exempt
 @api_view(['GET', 'POST'])
 def participation_create_request(request, experiment_id=None, format=None):
     client_data = ParticipationCreateRequestSerializer(data=request.data)
@@ -148,7 +147,6 @@ def participation_create_request(request, experiment_id=None, format=None):
     return response
 
 
-@csrf_exempt
 @api_view(['POST'])
 def video_view_result(request, format=None):
     client_serializer = VideoViewClientDataSerializer(data=request.data)
@@ -202,7 +200,6 @@ def video_view_result(request, format=None):
     return Response(answer, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
 @api_view(['POST'])
 def react_data(request, format=None):
     client_serializer = ParticipationReactInfoSerializer(data=request.data)
@@ -230,7 +227,6 @@ def react_data(request, format=None):
     return Response(answer, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
 @api_view(['POST'])
 def questions_data(request, format=None):
     client_serializer = ParticipationQuestionsInfoSerializer(data=request.data)
@@ -258,7 +254,6 @@ def questions_data(request, format=None):
     return Response(answer, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
 @staff_member_required
 def get_experiment_views_data(request, experiment_id, format=None):
     video_views = VideoView.objects
@@ -267,7 +262,6 @@ def get_experiment_views_data(request, experiment_id, format=None):
     return JsonResponse(list(video_views), safe=False)
 
 
-@csrf_exempt
 @staff_member_required
 def get_experiment_validation_views_data(request, experiment_id, format=None):
     video_views = VideoView.objects
@@ -276,7 +270,6 @@ def get_experiment_validation_views_data(request, experiment_id, format=None):
     return JsonResponse(list(video_views), safe=False)
 
 
-@csrf_exempt
 @staff_member_required
 def get_participation_data(request, activation_code, format=None):
     participation = Participation.objects.filter(activation_code=activation_code).first()
@@ -290,6 +283,8 @@ def get_participation_data(request, activation_code, format=None):
     return JsonResponse(serializer.data, safe=False)
 
 
+# Here csrf_exempt is needed because this
+# function is called from an external source
 @csrf_exempt
 def activation(request):
   if request.method != 'POST':
@@ -316,7 +311,7 @@ def activation(request):
   participation.save()
   return JsonResponse({'status': 'ok'})
 
-@csrf_exempt
+
 @api_view(['POST'])
 def admin_mode(request, format=None):
     client_serializer = ParticipationAdminModeSerializer(data=request.data)
@@ -343,7 +338,7 @@ def admin_mode(request, format=None):
 
     return Response(answer, status=status.HTTP_201_CREATED)
 
-@csrf_exempt
+
 @api_view(['GET', 'POST'])
 def rotate_speed(request, format=None):
     participation_uuid = utils.get_participant_uuid(request)
