@@ -1,0 +1,12 @@
+# Local runtime data and secrets
+app_data/
+docker/.env
+.env
+
+# Uploaded experiment assets
+web/static/experiment_video/
+
+# Python and Node build artifacts
+**/__pycache__/
+*.py[cod]
+node_modules/

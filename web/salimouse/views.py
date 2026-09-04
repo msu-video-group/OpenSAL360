@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse, HttpResponse
 from django.db import transaction
 from django.db.models import Q
@@ -15,7 +16,7 @@ from salimouse.models import Video, Participation, Experiment, VideoView
 from salimouse.serializers import VideoSerializer, ParticipationCreateRequestSerializer, VideoViewClientDataSerializer, ParticipationReactInfoSerializer, ParticipationQuestionsInfoSerializer, ParticipationAllInfoSerializer, ParticipationAdminModeSerializer, ParticipationRotateSpeedSerializer
 
 from . import utils
-from .utils import get_or_none, get_client_ip, get_client_ua, generate_videos_set, get_parsed_client_ua, get_active_participation
+from .utils import get_or_none, generate_videos_set, get_active_participation
 import uuid
 
 
@@ -25,8 +26,6 @@ def experiment(request, experiment_id):
     if not experiment:
         return HttpResponse('Experiment not found', status=status.HTTP_404_NOT_FOUND)
 
-    ua_parsed = utils.get_parsed_client_ua(request)
-    is_supported_ua = utils.is_supported_ua(ua_parsed)
     relative_background_blur_radius = experiment.relative_background_blur_radius
     relative_gaze_size_percent = experiment.relative_gaze_size_percent
     with_audio = experiment.with_audio
@@ -38,7 +37,6 @@ def experiment(request, experiment_id):
     unseen_cursor = experiment.unseen_cursor
     context = {
         'experiment_id': experiment_id,
-        'is_supported_ua': is_supported_ua,
         'num_seen_videos': 0,
         'verification_code': '',
         'relative_background_blur_radius': float(relative_background_blur_radius),
@@ -60,7 +58,9 @@ def experiment(request, experiment_id):
         if participation.is_completed():
             context['verification_code'] = str(participation.verification_code)
 
-    return HttpResponse(render(request, 'index.html', context=context))
+    response = render(request, 'index.html', context=context)
+    utils.set_participant_cookie(response, participation_uuid)
+    return response
 
 
 def index(request):
@@ -71,7 +71,6 @@ def index(request):
         return HttpResponse('There are no active experiments', status=status.HTTP_404_NOT_FOUND)
 
 
-@csrf_exempt
 @api_view(['GET', 'POST'])
 def participation_create_request(request, experiment_id=None, format=None):
     client_data = ParticipationCreateRequestSerializer(data=request.data)
@@ -94,8 +93,6 @@ def participation_create_request(request, experiment_id=None, format=None):
         participation = Participation()
         participation.experiment = experiment
         participation.uuid = participation_uuid
-        participation.login_user_agent = get_client_ua(request)
-        participation.login_ip = get_client_ip(request)
 
         participation.login_client_timestamp = client_data['timestamp']
         participation.login_client_info = client_data['client_info']
@@ -111,6 +108,9 @@ def participation_create_request(request, experiment_id=None, format=None):
             questions_info={},
         ).only(
             'questions_info',
+        ).order_by(
+            '-login_server_timestamp',
+            '-id',
         ).first()
 
         if previous_questions:
@@ -131,24 +131,29 @@ def participation_create_request(request, experiment_id=None, format=None):
     videos = [vw.video for vw in VideoView.objects.filter(participation_id=participation.id, seen=False).prefetch_related('video')]
     print('Selected {} unseen videos'.format(len(videos)))
 
-    new_participation = (participation.questions_info == {} and not experiment.fast_mode)
+    new_participation = (
+        not participation.completed
+        and participation.questions_info == {}
+        and not experiment.fast_mode
+    )
 
     response_data = {
         'participation_id': participation.id,
         'videos': VideoSerializer(videos, many=True).data,
         'new_participation': new_participation
     }
-    return Response(response_data, status=status.HTTP_201_CREATED)
+    response = Response(response_data, status=status.HTTP_201_CREATED)
+    utils.set_participant_cookie(response, participation_uuid)
+    return response
 
 
-@csrf_exempt
 @api_view(['POST'])
 def video_view_result(request, format=None):
     client_serializer = VideoViewClientDataSerializer(data=request.data)
     if not client_serializer.is_valid():
         return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    participation_uuid = request.session.get('participation_uuid')
+    participation_uuid = utils.get_participant_uuid(request)
     if not participation_uuid:
         return Response('User is not authorized', status=status.HTTP_401_UNAUTHORIZED)
 
@@ -164,7 +169,16 @@ def video_view_result(request, format=None):
     if video_view is None:
         return Response('There are no such video in the participation', status=status.HTTP_400_BAD_REQUEST)
     if video_view.seen:
-        return Response('The video has been already seen', status=status.HTTP_400_BAD_REQUEST)
+        # The browser retries until it receives an acknowledgement. If the
+        # first response was lost after the transaction committed, acknowledge
+        # the retry without overwriting the result that is already stored.
+        answer = {
+            'status': 'ok',
+            'comment': 'The video result was already stored',
+        }
+        if participation.is_completed():
+            answer['verification_code'] = participation.verification_code
+        return Response(answer, status=status.HTTP_201_CREATED)
 
     # Update and save video view
     for attr in VideoViewClientDataSerializer.updatable_fields:
@@ -186,14 +200,13 @@ def video_view_result(request, format=None):
     return Response(answer, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
 @api_view(['POST'])
 def react_data(request, format=None):
     client_serializer = ParticipationReactInfoSerializer(data=request.data)
     if not client_serializer.is_valid():
         return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    participation_uuid = request.session.get('participation_uuid')
+    participation_uuid = utils.get_participant_uuid(request)
     if not participation_uuid:
         return Response('User is not authorized', status=status.HTTP_401_UNAUTHORIZED)
 
@@ -214,14 +227,13 @@ def react_data(request, format=None):
     return Response(answer, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
 @api_view(['POST'])
 def questions_data(request, format=None):
     client_serializer = ParticipationQuestionsInfoSerializer(data=request.data)
     if not client_serializer.is_valid():
         return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    participation_uuid = request.session.get('participation_uuid')
+    participation_uuid = utils.get_participant_uuid(request)
     if not participation_uuid:
         return Response('User is not authorized', status=status.HTTP_401_UNAUTHORIZED)
 
@@ -242,7 +254,7 @@ def questions_data(request, format=None):
     return Response(answer, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
+@staff_member_required
 def get_experiment_views_data(request, experiment_id, format=None):
     video_views = VideoView.objects
     video_views = video_views.filter(participation__experiment_id=experiment_id, seen=True)
@@ -250,7 +262,7 @@ def get_experiment_views_data(request, experiment_id, format=None):
     return JsonResponse(list(video_views), safe=False)
 
 
-@csrf_exempt
+@staff_member_required
 def get_experiment_validation_views_data(request, experiment_id, format=None):
     video_views = VideoView.objects
     video_views = video_views.filter(participation__experiment_id=experiment_id, seen=True, video__is_validation=True)
@@ -258,16 +270,21 @@ def get_experiment_validation_views_data(request, experiment_id, format=None):
     return JsonResponse(list(video_views), safe=False)
 
 
-@csrf_exempt
+@staff_member_required
 def get_participation_data(request, activation_code, format=None):
     participation = Participation.objects.filter(activation_code=activation_code).first()
     if participation is None:
-        return Response('There are no participation with such id and uuid', status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(
+            {'error': 'There is no participation with such activation code'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     
     serializer = ParticipationAllInfoSerializer(participation)
     return JsonResponse(serializer.data, safe=False)
 
 
+# Here csrf_exempt is needed because this
+# function is called from an external source
 @csrf_exempt
 def activation(request):
   if request.method != 'POST':
@@ -294,14 +311,14 @@ def activation(request):
   participation.save()
   return JsonResponse({'status': 'ok'})
 
-@csrf_exempt
+
 @api_view(['POST'])
 def admin_mode(request, format=None):
     client_serializer = ParticipationAdminModeSerializer(data=request.data)
     if not client_serializer.is_valid():
         return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    participation_uuid = request.session.get('participation_uuid')
+    participation_uuid = utils.get_participant_uuid(request)
     if not participation_uuid:
         return Response('User is not authorized', status=status.HTTP_401_UNAUTHORIZED)
 
@@ -321,10 +338,10 @@ def admin_mode(request, format=None):
 
     return Response(answer, status=status.HTTP_201_CREATED)
 
-@csrf_exempt
+
 @api_view(['GET', 'POST'])
 def rotate_speed(request, format=None):
-    participation_uuid = request.session.get('participation_uuid')
+    participation_uuid = utils.get_participant_uuid(request)
     if not participation_uuid:
         return Response({'error': 'User is not authorized'}, status=status.HTTP_401_UNAUTHORIZED)
 

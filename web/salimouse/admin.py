@@ -130,7 +130,7 @@ class VideoAdmin(admin.ModelAdmin):
 
         form = VideoAdminUploadForm(request.POST or None, request.FILES or None)
         if request.method == "POST" and form.is_valid():
-            uploaded_files = request.FILES.getlist("videos")
+            uploaded_files = form.cleaned_data["videos"]
             validation_indexes = set(request.POST.getlist("validation_files"))
             created_videos = []
             errors = []

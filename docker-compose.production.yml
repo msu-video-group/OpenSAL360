@@ -13,6 +13,11 @@ services:
       - ./docker/.env
     environment:
       - DEBUG=False
+      - SECURE_PROXY_SSL_HEADER=True
+      - SECURE_SSL_REDIRECT=True
+      - SESSION_COOKIE_SECURE=True
+      - CSRF_COOKIE_SECURE=True
+      - SECURE_HSTS_SECONDS=3600
     volumes:
       - ./web:/code
       - ./app_data/web_static:/web_static
@@ -26,6 +31,7 @@ services:
     volumes:
       - ./docker/nginx/entrypoint.sh:/entrypoint.sh:ro
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./web/static/experiment_video:/home/web/experiment_video
       - ./app_data/web_static:/home/web/static
       - ./app_data/certbot/conf:/etc/letsencrypt
       - ./app_data/certbot/www:/var/www/certbot

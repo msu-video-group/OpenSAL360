@@ -13,6 +13,8 @@ parser.add_argument('--path_data', type=str, required=True)
 parser.add_argument('--path_out', type=str, required=True)
 parser.add_argument('--path_val_metrics', type=str, default='validation_result')
 parser.add_argument('--path_metadata', type=str, required=True)
+parser.add_argument('--validation_videos', nargs=3, required=True)
+parser.add_argument('--cc_thresholds', nargs=3, type=float, required=True)
 args = parser.parse_args()
 
 root = Path(args.path_data)
@@ -22,8 +24,8 @@ with open(args.path_metadata) as f:
     video_infos = json.load(f)
 
 METRICS = ['cc', 'sim', 'nss', 'auc_judd']
-val_videos = ["val_PVS-HMEM_mute_Lion", "val_salient360_mute_4_Ocean", "val_VR-EyeTracker_mono_059"]
-Thresholds = [0.11522367324510197, 0.10169350194002133, 0.049167433169621896]
+val_videos = args.validation_videos
+Thresholds = args.cc_thresholds
 
 val_metrics_path = Path(args.path_val_metrics)
 if not val_metrics_path.exists():

@@ -8,7 +8,7 @@
   <!-- Disallow zooming-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   
-  {% load staticfiles %}
+  {% load static %}
   <!-- JQuery and Popper.js -->
   <!-- <script src="jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script> -->
   <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
@@ -62,12 +62,19 @@
   <link rel="stylesheet" href="{% static 'css/salimouse-player.css' %}">
   <link rel="stylesheet" href="{% static 'css/screen-check.component.css' %}">
 
-  <script type="text/javascript" src="{% static 'js/salimouse-player.js' %}"></script>
-  <!-- <script type="text/javascript" src="{% static 'js/screen-check.component.js' %}"></script> -->
+  <script src="{% static 'js/salimouse/core.js' %}"></script>
+  <script src="{% static 'js/salimouse/state.js' %}"></script>
+  <script src="{% static 'js/salimouse/participation.js' %}"></script>
+  <script src="{% static 'js/salimouse/player.js' %}"></script>
+  <script src="{% static 'js/salimouse/sensitivity.js' %}"></script>
+  <script src="{% static 'js/salimouse/tracking.js' %}"></script>
+  <script src="{% static 'js/salimouse/validation.js' %}"></script>
+  <script src="{% static 'js/salimouse/tutorial.js' %}"></script>
+  <script src="{% static 'js/salimouse/media.js' %}"></script>
+  <script src="{% static 'js/salimouse/screen-check.js' %}"></script>
 </head>
 <body>
 
-{% if is_supported_ua %}
   {% if num_seen_videos == 0 %}
   <div id="instructions-panel" class="centerer">
     <div id="instruction_1" style="min-height: 0; display: none; overflow-y: auto; width: 100%;">
@@ -365,8 +372,7 @@
       </h3>
       <button id="helpIcon" type="button" class="btn btn-lg btn-secondary button-resizer font-resizer" i18n="@@ruler-change-button" onclick="toggleHelp()">Help</button>
   </div>
-  {% if not fast_mode %}
-    <div id="helpBlock" class="centerer" style="background-color: #000000a0;">
+  <div id="helpBlock" class="centerer" style="background-color: #000000a0; display: none;">
       <div class="help-popup" style="color: black;">
         <button class="close-button" onclick="toggleHelp()">×</button>
         <div class="help-content" style="text-align: justify;">
@@ -416,39 +422,9 @@
             <button onclick="toggleHelp()" class="btn btn-secondary button-resizer font-resizer">Close</button>
         </div>
       </div>  
-    </div>
-  {% else %}
-        <div id="helpBlock" class="centerer" style="background-color: #000000a0;">
-      <div class="help-popup" style="color: black;">
-        <button class="close-button" onclick="toggleHelp()">×</button>
-        <div class="help-content" style="text-align: justify;">
-            <h4>Website usage guide</h4>
-            <h5>Thank you for deciding to take part in the study. This study is dedicated to developing <span style="color: #3495ff">methods for generating saliency maps</span>.</h5>
-            <h5>
-              Make sure the page is set to <span style="color: #3495ff">100% zoom</span> and the browser is open in 
-              <span style="color: #3495ff">fullscreen</span>; you can change the zoom using Ctrl + mouse wheel scrolling.
-            </h5>
-            <div class="img-block">
-                <img id="100-prc" style="width: 20%; border: 2px solid green; border-radius: 4px;">
-                <img id="125-prc" style="width: 20%; border: 2px solid red; border-radius: 4px;">
-            </div>
-            
-            <button onclick="toggleHelp()" class="btn btn-secondary button-resizer font-resizer">Close</button>
-        </div>
-      </div>  
-    </div>
-  {% endif %}
+  </div>
 
 </div>
-
-{% else %}
-  <div id="unsupported-browser">
-    <div class="alert alert-danger" role="alert">
-      <p>The browser you are using is not suitable for completing this task.</p>
-      <p>Please use one of the following browsers: Google Chrome, Mozilla Firefox, Opera, or Yandex.Browser.</p>
-    </div>
-  </div>
-{% endif %}
 
 </body>
 </html>

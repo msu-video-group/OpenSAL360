@@ -1,12 +1,10 @@
 # OpenSAL360
 
-[![Dataset](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md.svg)](https://huggingface.co/datasets/ANDRYHA/OpenSAL360)
+An open-source crowdsourcing platform for omnidirectional video saliency collection.
 
-An open-source web platform for collecting mouse-based saliency data on omnidirectional videos.
+OpenSAL360 provides a streamlined browser-based workflow for crowdsourced saliency experiments, along with tools for transforming collected viewport movement data into fixations and saliency maps.
 
-OpenSAL360 provides a streamlined browser-based workflow for saliency crowdsourcing experiments, together with tools for transforming mouse-based gaze data into fixations and saliency maps.
-
-<img width="1955" height="963" alt="OpenSal360" src="https://github.com/user-attachments/assets/2c9e7aff-deac-4df8-abdd-075f72aef176" />
+<img width="1957" height="962" alt="OpenSal360" src="https://github.com/user-attachments/assets/a7f433fb-de6e-41bb-aebd-9d6f415924c9" />
 
 ## Demo Video :clapper:
 
@@ -21,6 +19,7 @@ You can explore a live version of OpenSAL360 through our public demo. Completing
 [Open the live demo](http://saliency.subjectify.online/experiment/1/)
 
 ## Dataset :card_index_dividers:
+[![Dataset](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md.svg)](https://huggingface.co/datasets/ANDRYHA/OpenSAL360)
 
 The dataset collected with OpenSAL360, comprising 500 videos, is publicly available on Hugging Face:
 
@@ -28,11 +27,11 @@ The dataset collected with OpenSAL360, comprising 500 videos, is publicly availa
 
 ## What It Offers :stars:
 
-- Browser-based participant experience with no custom client installation
-- Researcher-friendly Django admin interface
-- Video upload and experiment configuration workflow
-- Mouse-based saliency collection for omnidirectional videos
-- Export and processing pipeline for fixations and saliency maps
+- Browser-based user interface without any VR-specific requirements;
+- Admin panel with precise experiment configuration;
+- Video upload and experiment configuration workflow;
+- Crowdsourcing-based saliency collection for omnidirectional videos;
+- Export and processing pipeline for fixations and saliency maps;
 
 ## Quick Start :rocket:
 
@@ -42,20 +41,30 @@ The dataset collected with OpenSAL360, comprising 500 videos, is publicly availa
 4. Open the admin panel at `http://localhost/admin/`, then add videos and create an experiment.
 5. Open the platform at `http://localhost/`.
 
-See [Local Quick Start](https://github.com/msu-video-group/VideoSaliency360/wiki/Local-Quick-Start) for the full setup details.
+See [Local Quick Start](https://github.com/msu-video-group/OpenSAL360/wiki/Local-Quick-Start) for the full setup details.
 
 ## Documentation :books:
 
-Extended documentation is available in the [GitHub Wiki](https://github.com/msu-video-group/VideoSaliency360/wiki):
+Extended documentation is available in the [GitHub Wiki](https://github.com/msu-video-group/OpenSAL360/wiki):
 
-- [Wiki Home](https://github.com/msu-video-group/VideoSaliency360/wiki)
-- [Local Quick Start](https://github.com/msu-video-group/VideoSaliency360/wiki/Local-Quick-Start)
-- [Production Deployment](https://github.com/msu-video-group/VideoSaliency360/wiki/Production-Deployment)
-- [Admin Guide](https://github.com/msu-video-group/VideoSaliency360/wiki/Admin-Guide)
-- [Data Models](https://github.com/msu-video-group/VideoSaliency360/wiki/Data-Models)
-- [Processing](https://github.com/msu-video-group/VideoSaliency360/wiki/Processing)
-- [Backup and Restore](https://github.com/msu-video-group/VideoSaliency360/wiki/Backup-and-Restore)
+- [Wiki Home](https://github.com/msu-video-group/OpenSAL360/wiki)
+- [Local Quick Start](https://github.com/msu-video-group/OpenSAL360/wiki/Local-Quick-Start)
+- [Production Deployment](https://github.com/msu-video-group/OpenSAL360/wiki/Production-Deployment)
+- [Admin Guide](https://github.com/msu-video-group/OpenSAL360/wiki/Admin-Guide)
+- [Data Models](https://github.com/msu-video-group/OpenSAL360/wiki/Data-Models)
+- [Processing](https://github.com/msu-video-group/OpenSAL360/wiki/Processing)
+- [Backup and Restore](https://github.com/msu-video-group/OpenSAL360/wiki/Backup-and-Restore)
+- [Methodology Supplementary](https://github.com/msu-video-group/OpenSAL360/wiki/Methodology-Supplementary)
 
-## Citation :mortar_board:
+## Contributing :handshake:
+OpenSAL360 is designed as an open-source platform for scalable saliency data collection and reproducible research on omnidirectional video saliency. We welcome contributions from everyone interested in improving the platform and extending its use in immersive multimedia research. Possible contributions include, but are not limited to:
 
-`TODO: add a BibTeX entry`
+- Improving the web interface and experiment workflow;
+- Adding new data collection or annotation scenarios;
+- Extending the processing pipeline for fixations and saliency maps;
+- Improving deployment, documentation, and usability;
+- Reporting bugs, suggesting features, or sharing use cases.
+
+We believe that an open platform can accelerate the collection of diverse omnidirectional video saliency datasets and support the development of more generalizable, high-quality saliency prediction models for real-world immersive multimedia applications.
+
+To contribute, please open an issue or submit a pull request!

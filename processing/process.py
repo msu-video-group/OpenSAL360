@@ -14,8 +14,13 @@ def main():
 	parser.add_argument('--views_path', type=str, help='Path to views data')
 	parser.add_argument('--path_metadata', type=str, help='Path to metadata')
 	parser.add_argument('--path_result', type=str, help='Path to result')
-	parser.add_argument('--height', type=int, default=100)
-	parser.add_argument('--width', type=int, default=200)
+	parser.add_argument('--height', type=int, default=100, help='The height of the salience map')
+	parser.add_argument('--width', type=int, default=200, help='The width of the salience map')
+	parser.add_argument('--tr_freq', type=int, default=3, help='Frequency threshold')
+	parser.add_argument('--shift', type=int, default=300, help='Shift, ms')
+	parser.add_argument('--crop', type=int, default=1500, help='Trimming, ms')
+	parser.add_argument('--validation_videos', nargs=3, default=['1', '2', '3'], help='Validation video names')
+	parser.add_argument('--cc_thresholds', nargs=3, type=float, default=[0.11522367324510197, 0.10169350194002133, 0.049167433169621896], help='Validation CC thresholds')
 	
 	args = parser.parse_args()
 	
@@ -25,6 +30,11 @@ def main():
 	path_result = args.path_result
 	height = args.height
 	width = args.width
+	tr_freq = args.tr_freq
+	shift = args.shift
+	crop = args.crop
+	validation_videos = args.validation_videos
+	cc_thresholds = args.cc_thresholds
 
 	views_folder_name = os.path.basename(views_path)
 
@@ -37,7 +47,7 @@ def main():
 		sys.executable, 'freq_filt_360.py',
 		'--path_data', views_path,
 		'--path_out', f"{views_path}_filt",
-		'--tr_freq', '3',
+		'--tr_freq', str(tr_freq),
 		'--path_metadata', path_metadata
 	])
 	
@@ -52,8 +62,8 @@ def main():
 		sys.executable, 'uni_freq_360.py',
 		'--path_data', f"{views_path}_filt",
 		'--path_out', f"{views_path}_filt_uni",
-		'--shift', '300',
-		'--crop', '1500',
+		'--shift', str(shift),
+		'--crop', str(crop),
 		'--path_metadata', path_metadata
 	])
 	
@@ -85,7 +95,9 @@ def main():
 		'--path_data', f"{views_path}_filt_uni",
 		'--path_out', f"{views_path}_filt_uni_val_filt",
 		'--path_val_metrics', f"{views_folder_name}_val_result",
-		'--path_metadata', path_metadata
+		'--path_metadata', path_metadata,
+		'--validation_videos', *validation_videos,
+		'--cc_thresholds', *[str(threshold) for threshold in cc_thresholds]
 	])
 	
 	if result.returncode != 0:
@@ -112,4 +124,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
