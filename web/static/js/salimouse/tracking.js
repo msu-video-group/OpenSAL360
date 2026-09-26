@@ -379,18 +379,45 @@ function getISODateTime() {
 /* View in fullscreen */
 function openFullscreen() {
 	var elem = document.documentElement;
+	var request;
+	var fullscreenElement =
+		document.fullscreenElement ||
+		document.webkitFullscreenElement ||
+		document.mozFullScreenElement ||
+		document.msFullscreenElement;
+
+	if (fullscreenElement) return Promise.resolve(true);
+	if (document.fullscreenEnabled === false) return Promise.resolve(false);
+	if (navigator.userActivation && !navigator.userActivation.isActive) {
+		return Promise.resolve(false);
+	}
 
 	if (elem.requestFullscreen) {
-		elem.requestFullscreen();
+		request = () => elem.requestFullscreen();
 	} else if (elem.mozRequestFullScreen) {
 		/* Firefox */
-		elem.mozRequestFullScreen();
+		request = () => elem.mozRequestFullScreen();
 	} else if (elem.webkitRequestFullscreen) {
 		/* Chrome, Safari and Opera */
-		elem.webkitRequestFullscreen();
+		request = () => elem.webkitRequestFullscreen();
 	} else if (elem.msRequestFullscreen) {
 		/* IE/Edge */
-		elem.msRequestFullscreen();
+		request = () => elem.msRequestFullscreen();
+	} else {
+		return Promise.resolve(false);
+	}
+
+	try {
+		return Promise.resolve(request()).then(
+			() => true,
+			(error) => {
+				console.warn("Fullscreen request was denied", error);
+				return false;
+			},
+		);
+	} catch (error) {
+		console.warn("Fullscreen request was denied", error);
+		return Promise.resolve(false);
 	}
 }
 

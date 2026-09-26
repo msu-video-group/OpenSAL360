@@ -240,12 +240,7 @@ function enterFullScreen() {
 		document.mozFullScreenElement != null;
 	toggleFlags();
 	if (!fullScreenMode) {
-		if (document.body.parentElement.requestFullscreen)
-			document.body.parentElement.requestFullscreen();
-		else if (document.body.parentElement.webkitRequestFullscreen)
-			document.body.parentElement.webkitRequestFullscreen();
-		else if (document.body.parentElement.mozRequestFullscreen)
-			document.body.parentElement.mozRequestFullscreen();
+		openFullscreen();
 	}
 }
 
