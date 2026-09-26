@@ -112,7 +112,17 @@ function navigation(direction) {
 	} else {
 		const cart = $(`#instruction_${instruction_page}`);
 		cart.children("video").each((_index, elem) => {
-			elem.play();
+			const playResult = elem.play();
+			if (playResult && typeof playResult.catch === "function") {
+				playResult.catch((error) => {
+					console.warn(
+						"Could not play tutorial media",
+						elem.id,
+						elem.currentSrc || elem.src,
+						error,
+					);
+				});
+			}
 		});
 		cart.show();
 		if (instruction_page === 4) {

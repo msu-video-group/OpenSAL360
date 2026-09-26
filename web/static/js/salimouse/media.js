@@ -1,64 +1,62 @@
 function downloadMedia(media_info) {
-	var download_retries = 0;
+	const globalTargets = {
+		penguins: "FPV_VIDEO_URL",
+		val_ball: "VAL_BALL",
+		val_ball_1_25x: "VAL_BALL_1_25x",
+		val_ball_1_5x: "VAL_BALL_1_5x",
+		val_ball_2x: "VAL_BALL_2x",
+	};
 
-	// Create XHR and FileReader objects
-	function doDownload() {
-		var xhr = new XMLHttpRequest();
-		xhr.responseType = "blob";
-		xhr.open("GET", media_info.url, true);
-		xhr.addEventListener(
-			"load",
-			() => {
-				if (xhr.status === 200) {
-					media_info.data_blob = xhr.response;
-					media_info.data_url = URL.createObjectURL(xhr.response);
-					for (i = 0; i < media_info.ids.length; i++) {
-						if (media_info.ids[i] === "penguins") {
-							window.FPV_VIDEO_URL = media_info.data_url;
-						} else if (media_info.ids[i] === "val_ball") {
-							window.VAL_BALL = media_info.data_url;
-						} else if (media_info.ids[i] === "val_ball_1_25x") {
-							window.VAL_BALL_1_25x = media_info.data_url;
-						} else if (media_info.ids[i] === "val_ball_1_5x") {
-							window.VAL_BALL_1_5x = media_info.data_url;
-						} else if (media_info.ids[i] === "val_ball_2x") {
-							window.VAL_BALL_2x = media_info.data_url;
-						}
+	const loadResults = media_info.ids.map((target) => {
+		if (globalTargets[target]) {
+			window[globalTargets[target]] = media_info.url;
+			return Promise.resolve(true);
+		}
 
-						if (media_info.ids[i].startsWith("#")) {
-							const mediaElem = $(media_info.ids[i])[0];
-							if (mediaElem) {
-								mediaElem.src = media_info.data_url;
-							}
-						}
-					}
-				} else {
-					console.log("Retrying download for", media_info.url);
-					if (download_retries < 40) {
-						download_retries++;
-						setTimeout(doDownload, 1000); // Retry
-					} else {
-						$("#load-error").show();
-					}
-				}
-			},
-			false,
-		);
+		const element = document.querySelector(target);
+		if (!element) {
+			console.debug(
+				`Skipping media target "${target}": the element is not present on this page`,
+			);
+			return Promise.resolve(false);
+		}
 
-		xhr.addEventListener("error", () => {
-			console.log("Retrying download for", media_info.url);
-			if (download_retries < 20) {
-				download_retries++;
-				setTimeout(doDownload, 1000); // Retry
-			} else {
-				$("#load-error").show();
+		return new Promise((resolve) => {
+			const isMediaElement = element instanceof HTMLMediaElement;
+			const successEvent = isMediaElement ? "loadedmetadata" : "load";
+
+			function cleanup() {
+				element.removeEventListener(successEvent, onLoad);
+				element.removeEventListener("error", onError);
 			}
-		});
-		// Send XHR
-		xhr.send();
-	}
 
-	doDownload();
+			function onLoad() {
+				cleanup();
+				resolve(true);
+			}
+
+			function onError() {
+				cleanup();
+				const mediaError = isMediaElement ? element.error : null;
+				const mediaErrorDetails = mediaError
+					? `; MediaError code ${mediaError.code}: ${mediaError.message}`
+					: "";
+				console.error(
+					`Failed to load media "${media_info.url}" for "${target}"${mediaErrorDetails}`,
+				);
+				resolve(false);
+			}
+
+			element.addEventListener(successEvent, onLoad, { once: true });
+			element.addEventListener("error", onError, { once: true });
+
+			if (isMediaElement) element.preload = "auto";
+			element.src = media_info.url;
+			if (isMediaElement) element.load();
+		});
+	});
+
+	return Promise.all(loadResults).then((results) => results.every(Boolean));
 }
 
 // screen-check component
