@@ -16,7 +16,8 @@ Please make sure audio is enabled while watching the demo video.
 
 You can explore a live version of OpenSAL360 through our public demo. Completing it takes about 5 minutes and is a convenient way to see how the system works in practice.
 
-[Open the live demo](http://saliency.subjectify.online/experiment/1/)
+[Open the live demo](https://subjectify.online/experiment/1/)
+
 
 ## Dataset :card_index_dividers:
 [![Dataset](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md.svg)](https://huggingface.co/datasets/ANDRYHA/OpenSAL360)
